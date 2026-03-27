@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "lv.id.bonne.animalpen.expansion.alexscaves.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "animal_pen_expansion_alexs_caves.refmap.json",
+  "mixins": [
+    "GloomothEntityAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
