@@ -29,7 +29,6 @@ import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionEntry;
 import lv.id.bonne.animalpen.data.provider.AnimalInteractionProvider;
 import lv.id.bonne.animalpen.expansion.alexscaves.AnimalPenExpansionAlexsCaves;
-import lv.id.bonne.animalpen.expansion.alexscaves.provider.util.DataOrderInjection;
 import lv.id.bonne.animalpen.interaction.condition.ConditionEntry;
 import lv.id.bonne.animalpen.interaction.condition.Operator;
 import lv.id.bonne.animalpen.interaction.cooldown.CooldownEntry;
@@ -45,7 +44,6 @@ import lv.id.bonne.animalpen.interaction.value.IntValue;
 import lv.id.bonne.animalpen.interaction.value.StringValue;
 import lv.id.bonne.animalpen.registries.AnimalPenFunctionRegistry;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -65,18 +63,14 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
         CompletableFuture<HolderLookup.Provider> lookupProvider)
     {
         super(generator, lookupProvider);
-        this.registry = lookupProvider;
-        this.pathProvider = generator.createPathProvider(PackOutput.Target.DATA_PACK, "animal_interactions");
     }
 
 
     @Override
     @NotNull
-    public CompletableFuture<?> run(CachedOutput cache)
+    public CompletableFuture<?> generateData(CachedOutput cache)
     {
-        DataOrderInjection.injectCustomOrder();
-
-        CompletableFuture<?> future = this.registry.thenCompose(provider ->
+        return this.registries.thenCompose(provider ->
         {
             List<CompletableFuture<?>> futureList = new ArrayList<>();
 
@@ -122,8 +116,8 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
                     this.generateGummyBearFood(ACItemRegistry.SWEETISH_FISH_YELLOW.get(), GummyColors.YELLOW),
                     this.generateGummyBearFood(ACItemRegistry.SWEETISH_FISH_BLUE.get(), GummyColors.BLUE),
                     this.generateGummyBearFood(ACItemRegistry.SWEETISH_FISH_PINK.get(), GummyColors.PINK),
-                    this.generateAmbientSound(ACSoundRegistry.GUMMY_BEAR_IDLE.get())/*,
-                    this.generatePotionEffects()*/),
+                    this.generateAmbientSound(ACSoundRegistry.GUMMY_BEAR_IDLE.get()),
+                    this.generatePotionEffects()),
                 AlexsCaves.MODID));
 
             // Water bucketable
@@ -184,8 +178,6 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
 
             return CompletableFuture.allOf(futureList.toArray(CompletableFuture[]::new));
         });
-
-        return future.whenComplete(((o, throwable) -> DataOrderInjection.removeCustomOrder()));
     }
 
 
@@ -282,11 +274,14 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
 
         return AnimalInteractionBuilder.create("digesting").
             ingredient(CustomIngredient.of(potionList)).
+            consume(new ConsumerEntry.Consume(true)).
             runFunctions(FunctionKey.of(AnimalPenExpansionAlexsCaves.GUMMY_BEAR_POTIONS.get())).
-            cooldown(new CooldownEntry.Linear(48000, -20, 24000)).
+            cooldown(new CooldownEntry.Linear(48000, -20, 2400)).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready",
-                CustomIngredient.of(ACItemRegistry.JELLY_BEAN.get()))).build();
+                CustomIngredient.of(ACItemRegistry.JELLY_BEAN.get()))).
+            textLines(TextEntry.cooldown("display.animal_pen.cooldown",
+                CustomIngredient.of(potionList))).build();
     }
 
 
@@ -302,9 +297,4 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
 
         return DataProvider.saveStable(cache, json, file);
     }
-
-
-    private final CompletableFuture<HolderLookup.Provider> registry;
-
-    private final PackOutput.PathProvider pathProvider;
 }
