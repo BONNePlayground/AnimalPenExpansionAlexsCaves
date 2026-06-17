@@ -36,7 +36,7 @@ description='''${mod_description}'''
 
 [[dependencies."${mod_id}"]]
    modId="animal_pen"
-   versionRange="[2.3.1,)"
+   versionRange="[2.4.2,)"
    mandatory=true
    ordering="AFTER"
    side="BOTH"

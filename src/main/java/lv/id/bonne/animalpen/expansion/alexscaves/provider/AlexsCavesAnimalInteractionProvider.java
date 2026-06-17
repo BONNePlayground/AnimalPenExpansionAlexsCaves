@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
-import lv.id.bonne.animalpen.AnimalPen;
 import lv.id.bonne.animalpen.data.listener.AnimalInteractionEntry;
 import lv.id.bonne.animalpen.data.provider.AnimalInteractionProvider;
 import lv.id.bonne.animalpen.expansion.alexscaves.AnimalPenExpansionAlexsCaves;
@@ -92,20 +92,20 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
 
             futureList.add(this.generateWithInteractions(cache,
                 ACEntityRegistry.GAMMAROACH.get(),
-                List.of(this.generateFood(CustomIngredient.of(ACItemRegistry.SPELUNKIE.get())),
-                    this.generateAmbientSound(ACSoundRegistry.GAMMAROACH_IDLE.get())),
+                Stream.concat(this.generateFood(CustomIngredient.of(ACItemRegistry.SPELUNKIE.get())).stream(),
+                    Stream.of(this.generateAmbientSound(ACSoundRegistry.GAMMAROACH_IDLE.get()))).toList(),
                 AlexsCaves.MODID));
 
             futureList.add(this.generateWithInteractions(cache,
                 ACEntityRegistry.RAYCAT.get(),
-                List.of(this.generateFood(CustomIngredient.of(ACItemRegistry.RADGILL.get())),
-                    this.generateAmbientSound(ACSoundRegistry.RAYCAT_IDLE.get())),
+                Stream.concat(this.generateFood(CustomIngredient.of(ACItemRegistry.RADGILL.get())).stream(),
+                    Stream.of(this.generateAmbientSound(ACSoundRegistry.RAYCAT_IDLE.get()))).toList(),
                 AlexsCaves.MODID));
 
             futureList.add(this.generateWithInteractions(cache,
                 ACEntityRegistry.CANDICORN.get(),
-                List.of(this.generateFood(CustomIngredient.of(ACBlockRegistry.CANDY_CANE.get())),
-                    this.generateAmbientSound(ACSoundRegistry.CANDICORN_IDLE.get())),
+                Stream.concat(this.generateFood(CustomIngredient.of(ACBlockRegistry.CANDY_CANE.get())).stream(),
+                    Stream.of(this.generateAmbientSound(ACSoundRegistry.CANDICORN_IDLE.get()))).toList(),
                 AlexsCaves.MODID));
 
             futureList.add(this.generateWithInteractions(cache,
@@ -191,7 +191,7 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
             ingredient(CustomIngredient.of(ACTagRegistry.SEA_PIG_DIGESTS)).
             lootEntry(LootEntry.of(SeaPigEntity.DIGESTION_LOOT_TABLE)).
                 consume(new ConsumerEntry.Consume(true)).
-            cooldown(new CooldownEntry.Static(20)).
+            cooldown(new CooldownEntry.Static(2000)).
             sound(ACSoundRegistry.SEA_PIG_EAT.getId()).
             redstoneBit(2).
             textLines(TextEntry.ready("display.animal_pen.full_ready", lootItems)).
@@ -204,7 +204,7 @@ public class AlexsCavesAnimalInteractionProvider extends AnimalInteractionProvid
     {
         return AnimalInteractionBuilder.create("froglight").
             ingredient(CustomIngredient.of(Items.MAGMA_BLOCK)).
-            lootEntry(LootEntry.of(AnimalPen.resourceOf("alexscaves/magma_cube/froglight"))). // carmine_froglight need to add
+            lootEntry(LootEntry.of(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "animal_interactions/magma_cube/froglight"))). // carmine_froglight need to add
                 consume(new ConsumerEntry.Consume(true)).
             conditions(new ConditionEntry.MobCondition("variant", Operator.MATCH, new StringValue("alexscaves:primordial"))).
             cooldown(new CooldownEntry.Linear(6000, -20, 200)).

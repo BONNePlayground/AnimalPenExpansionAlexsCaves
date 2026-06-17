@@ -1,3 +1,4 @@
-# Version 1.1
+# Version 1.2
 
-- Add ability for gummy bear to eat potions
+- Update to Animal Pens 2.4.2
+- Fixes wrong froglight loot-table
